@@ -1,0 +1,46 @@
+---
+# Install CFME dependent packages
+
+- name: install package dependencies
+  yum: name=$item state=present
+  with_items:
+   #- iconv-devel
+   - gcc-c++
+   - patch
+   - readline.x86_64
+   - readline-devel.x86_64
+   - zlib
+   - zlib-devel.x86_64
+   - libyaml-devel
+   - libffi-devel
+   - openssl-devel.x86_64
+   - make
+   - bzip2
+   - autoconf
+   - automake
+   - libtool
+   - bison
+   - ruby-devel
+   - qpid-cpp-client-devel
+   - freetds-devel
+   - libxml2-devel.x86_64
+   - libxslt-devel.x86_64
+   - gcc-c++.x86_64
+   - memcached
+   - postgresql-server
+   - postgresql-devel
+   - net-tools
+   - screen
+
+- name: start memcached
+  service: name=memcached state=started enabled=true
+
+- name: download cfme using github token
+  # ansible 'git' module --depth option added in ansible 1.2
+  action: command git clone https://$github_token@$cfme_src $cfme_dir --depth $github_depth creates=$cfme_dir
+  #git: repo=https://$github_token@$cfme_src dest=$cfme_dir depth=$github_depth
+
+- name: download vddk install script
+  action: copy src=files/install_vddk.sh dest=$item/install_vddk.sh mode=0755
+  with_env: HOME
+

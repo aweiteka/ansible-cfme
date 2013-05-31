@@ -1,0 +1,4 @@
+- name: restart postgres
+  action: service name=postgresql state=restarted
+  #action: /usr/bin/pg_ctl -D $db_dir reload
+

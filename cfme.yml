@@ -1,0 +1,22 @@
+---
+# Base playbook for installation
+
+- name: cfme
+  hosts: local
+  connection: local
+
+  tasks:
+  - include: tasks/install.yml
+    vars:
+        # https://${github_token}@github.com/ManageIQ/cfme.git
+        github_token: github_token
+        github_depth: 1
+        cfme_src: github.com/ManageIQ/cfme.git
+        cfme_dir: /var/www/cfme
+  - include: tasks/db_config.yml
+    vars:
+        db_user: postgres
+        db_passwd: smartvm
+        db_dir: /var/lib/pgsql/data
+  handlers:
+  - include: handlers.yml

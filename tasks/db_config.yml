@@ -1,0 +1,24 @@
+- name: install python-psycopg2 for ansible postgresql_db module
+  yum: name=python-psycopg2 state=present
+
+- name: init db
+  command: service postgresql initdb creates=$db_dir/postmaster.pid
+
+- name: copy postgresql.conf
+  action: copy src=files/postgresql.conf dest=$db_dir/postgresql.conf
+          owner=postgres group=postgres mode=0600
+  notify:
+    - restart postgres
+
+- name: copy pg_hba.conf
+  action: copy src=files/pg_hba.conf dest=$db_dir/pg_hba.conf
+          owner=postgres group=postgres mode=0600
+  notify:
+    - restart postgres
+
+- name: start postgres
+  action: service name=postgresql state=running
+
+- name: create role
+  postgresql_user: fail_on_user=no login_user=postgres name=root password=$db_passwd role_attr_flags=CREATEDB,CREATEROLE,SUPERUSER state=present
+
