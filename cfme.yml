@@ -18,5 +18,17 @@
         db_user: postgres
         db_passwd: smartvm
         db_dir: /var/lib/pgsql/data
+  - include: tasks/ruby_setup.yml
+    vars:
+        rbenv_dir: .rbenv
+        ruby_ver: 1.9.3-p327
+        profile: .bash_profile
+        # FIXME: use playbook-scope var $cfme_dir/vmdb
+        vmdb_dir: /var/www/cfme/vmdb
+        bundler_ver: 1.1.3
+  - include: tasks/init_cfme.yml
+    vars:
+        # FIXME: dup
+        vmdb_dir: /var/www/cfme/vmdb
   handlers:
   - include: handlers.yml

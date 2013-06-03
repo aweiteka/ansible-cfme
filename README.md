@@ -19,6 +19,6 @@ Install and configure CloudForms Management Engine environment from source. Uses
 5. To install VMWare vddk run `$HOME/install_vddk.sh http://url/to/vmware-vix-disklib.tar (will reboot)`
 
 ## TODO
- * Work in progress. Does not yet support ruby, rbenv and gem install
+ * Work in progress.
 
 Please send me feedback at [aweiteka@redhat.com](mailto:aweiteka@redhat.com) with issues or suggestions. Pull requests encouraged!
