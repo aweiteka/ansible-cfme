@@ -5,14 +5,15 @@
   hosts: local
   connection: local
 
+  vars:
+    cfme_dir: /var/www/cfme
+    vmdb_dir: $cfme_dir/vmdb
   tasks:
   - include: tasks/install.yml
     vars:
-        # https://${github_token}@github.com/ManageIQ/cfme.git
-        github_token: github_token
+        github_token: 
+        cfme_src: https://$github_token@github.com/ManageIQ/cfme.git
         github_depth: 1
-        cfme_src: github.com/ManageIQ/cfme.git
-        cfme_dir: /var/www/cfme
   - include: tasks/db_config.yml
     vars:
         db_user: postgres
@@ -23,12 +24,7 @@
         rbenv_dir: .rbenv
         ruby_ver: 1.9.3-p327
         profile: .bash_profile
-        # FIXME: use playbook-scope var $cfme_dir/vmdb
-        vmdb_dir: /var/www/cfme/vmdb
         bundler_ver: 1.1.3
   - include: tasks/init_cfme.yml
-    vars:
-        # FIXME: dup
-        vmdb_dir: /var/www/cfme/vmdb
   handlers:
   - include: handlers.yml

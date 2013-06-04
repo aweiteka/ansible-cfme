@@ -1,9 +1,8 @@
 - name: install python-psycopg2 for ansible postgresql_db module
   yum: name=python-psycopg2 state=present
 
-# failure when db_dir already exists on first run?
 - name: init db
-  command: service postgresql initdb creates=$db_dir
+  command: service postgresql initdb creates=$db_dir/PG_VERSION
 
 - name: copy postgresql.conf
   copy: src=files/postgresql.conf dest=$db_dir/postgresql.conf

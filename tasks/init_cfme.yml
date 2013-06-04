@@ -1,6 +1,15 @@
-# FIXME: edit firewall rules
-- name: stop firewall
-  service: name=firewalld state=stopped enabled=no
+- name: install libsemanage-python for ansible setsebool module
+  yum: name=libsemanage-python state=present
+
+- name: setsebool httpd_can_network_connect on
+  seboolean: name=httpd_can_network_connect persistent=yes state=on
+
+- name: copy iptables
+  copy: src=files/iptables dest=/etc/sysconfig/iptables
+          owner=root group=root mode=0600
+
+- name: ensure firewalld
+  service: name=firewalld state=started enabled=yes
 
 - name: db create
   command: bundle exec bin/rake db:create:all chdir=$vmdb_dir

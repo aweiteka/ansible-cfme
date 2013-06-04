@@ -4,7 +4,6 @@
 - name: install package dependencies
   yum: name=$item state=present
   with_items:
-   #- iconv-devel
    - gcc-c++
    - patch
    - readline.x86_64
@@ -36,10 +35,8 @@
 
 - name: download cfme using github token
   # ansible 'git' module --depth option added in ansible 1.2
-  action: command git clone https://$github_token@$cfme_src $cfme_dir --depth $github_depth creates=$cfme_dir
-  #git: repo=https://$github_token@$cfme_src dest=$cfme_dir depth=$github_depth
+  action: command git clone $cfme_src $cfme_dir --depth $github_depth creates=$cfme_dir
 
 - name: download vddk install script
-  action: copy src=files/install_vddk.sh dest=$item/install_vddk.sh mode=0755
-  with_env: HOME
+  action: copy src=files/install_vddk.sh dest=$ENV(HOME)/install_vddk.sh mode=0755
 

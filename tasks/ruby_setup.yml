@@ -1,16 +1,13 @@
 - name: clone rbenv
-  git: repo=git://github.com/sstephenson/rbenv.git dest=$item/$rbenv_dir force=no
-  with_env: HOME
+  git: repo=git://github.com/sstephenson/rbenv.git dest=$ENV(HOME)/$rbenv_dir force=no
 
 - name: clone ruby rbenv-gemset
-  git: repo=git://github.com/jamis/rbenv-gemset.git dest=$item/$rbenv_dir/plugins force=no
-  with_env: HOME
+  git: repo=git://github.com/jamis/rbenv-gemset.git dest=$ENV(HOME)/$rbenv_dir/plugins force=no
 
-  # FIXME: /root hard-coded for this manual install
   # should not be necessary if rbenv path setup properly
 - name: install rbenv-gemset to /usr/local/bin
   #command: cp /root/$rbenv_dir/plugins/libexec/$item /usr/local/bin/ creates=/usr/local/bin/$item
-  file: src=/root/$rbenv_dir/plugins/libexec/$item dest=/usr/local/bin/$item state=link
+  file: src=$ENV(HOME)/$rbenv_dir/plugins/libexec/$item dest=/usr/local/bin/$item state=link
   with_items:
     - rbenv-gemset
     - rbenv-gemset-active
@@ -20,29 +17,24 @@
     - rbenv-gemset-list
 
 - name: clone ruby-build
-  git: repo=https://github.com/sstephenson/ruby-build.git dest=$item/$rbenv_dir/plugins/ruby-build force=no
-  with_env: HOME
+  git: repo=https://github.com/sstephenson/ruby-build.git dest=$ENV(HOME)/$rbenv_dir/plugins/ruby-build force=no
 
 - name: add rbenv to path
-  lineinfile: dest=$item/$profile regexp="$rbenv_dir/bin" line="export PATH=$HOME/$rbenv_dir/bin:$PATH"
-  with_env: HOME
+  lineinfile: dest=$ENV(HOME)/$profile regexp="$rbenv_dir/bin" line="export PATH=$HOME/$rbenv_dir/bin:$PATH"
 
 - name: add rbenv init to path
-  lineinfile: dest=$item/$profile regexp="rbenv init" line='eval "$(rbenv init -)"' insertafter=EOF
-  with_env: HOME
+  lineinfile: dest=$ENV(HOME)/$profile regexp="rbenv init" line='eval "$(rbenv init -)"' insertafter=EOF
 
 - name: source path
-  shell: exec $SHELL -l
+  shell: exec $ENV(SHELL) -l
 
 # workaround since path not resolving
 - name: install ruby-build standalone
-  shell: ./install.sh chdir=$item/$rbenv_dir/plugins/ruby-build creates=/usr/local/bin/ruby-build
-  with_env: HOME
+  shell: ./install.sh chdir=$ENV(HOME)/$rbenv_dir/plugins/ruby-build creates=/usr/local/bin/ruby-build
 
 - name: install ruby
   #command: rbenv install $ruby_ver creates=/usr/local/rbenv/versions/$ruby_ver/bin/ruby
-  command: rbenv install $ruby_ver creates=$item/.rbenv/versions/$ruby_ver/bin/ruby
-  with_env: HOME
+  command: rbenv install $ruby_ver creates=$ENV(HOME)/.rbenv/versions/$ruby_ver/bin/ruby
 
 - name: rbenv rehash
   command: rbenv rehash
@@ -68,7 +60,6 @@
 - name: rbenv rehash-c
   command: rbenv rehash chdir=$vmdb_dir
 
-# qpid failure? /usr/local/share/gems/gems/qpid_messaging-0.20.2
 - name: bundle install
-  command: bundle install --without=development metric_fu test_ui test sqlserver chdir=$vmdb_dir
+  command: bundle install --without metric_fu:sqlserver:qpid chdir=$vmdb_dir
 
