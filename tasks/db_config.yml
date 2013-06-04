@@ -1,17 +1,18 @@
 - name: install python-psycopg2 for ansible postgresql_db module
   yum: name=python-psycopg2 state=present
 
+# failure when db_dir already exists on first run?
 - name: init db
   command: service postgresql initdb creates=$db_dir
 
 - name: copy postgresql.conf
-  action: copy src=files/postgresql.conf dest=$db_dir/postgresql.conf
+  copy: src=files/postgresql.conf dest=$db_dir/postgresql.conf
           owner=$db_user group=$db_user mode=0600
   notify:
     - restart postgres
 
 - name: copy pg_hba.conf
-  action: copy src=files/pg_hba.conf dest=$db_dir/pg_hba.conf
+  copy: src=files/pg_hba.conf dest=$db_dir/pg_hba.conf
           owner=$db_user group=$db_user mode=0600
   notify:
     - restart postgres

@@ -7,8 +7,10 @@
   with_env: HOME
 
   # FIXME: /root hard-coded for this manual install
+  # should not be necessary if rbenv path setup properly
 - name: install rbenv-gemset to /usr/local/bin
-  command: cp /root/$rbenv_dir/plugins/rbenv-gemset/libexec/$item /usr/local/bin/ creates=/usr/local/bin/$item
+  #command: cp /root/$rbenv_dir/plugins/libexec/$item /usr/local/bin/ creates=/usr/local/bin/$item
+  file: src=/root/$rbenv_dir/plugins/libexec/$item dest=/usr/local/bin/$item state=link
   with_items:
     - rbenv-gemset
     - rbenv-gemset-active
@@ -30,17 +32,17 @@
   with_env: HOME
 
 - name: source path
-  action: shell exec $SHELL -l
+  shell: exec $SHELL -l
 
+# workaround since path not resolving
 - name: install ruby-build standalone
   shell: ./install.sh chdir=$item/$rbenv_dir/plugins/ruby-build creates=/usr/local/bin/ruby-build
   with_env: HOME
 
-- name: copy install ruby script
-  template: src=templates/install_ruby.sh.j2 dest=/tmp/install_ruby.sh owner=root group=root mode=0755
-
 - name: install ruby
-  command: rbenv install $ruby_ver creates=/usr/local/rbenv/versions/$ruby_ver/bin/ruby
+  #command: rbenv install $ruby_ver creates=/usr/local/rbenv/versions/$ruby_ver/bin/ruby
+  command: rbenv install $ruby_ver creates=$item/.rbenv/versions/$ruby_ver/bin/ruby
+  with_env: HOME
 
 - name: rbenv rehash
   command: rbenv rehash
@@ -50,7 +52,6 @@
 
 - name: create gemset cfme
   command: rbenv gemset create $ruby_ver cfme 
-  with_env: HOME
 
 - name: install gemset cfme
   command: touch .rbenv-gemsets chdir=$vmdb_dir creates=$vmdb_dir/.rbenv-gemsets
@@ -62,11 +63,12 @@
   command: rbenv rehash chdir=$vmdb_dir
 
 - name: gem install bundler
-  gem: name=bundler version=$bundler_ver
+  gem: name=bundler state=present version=$bundler_ver
 
 - name: rbenv rehash-c
   command: rbenv rehash chdir=$vmdb_dir
 
+# qpid failure? /usr/local/share/gems/gems/qpid_messaging-0.20.2
 - name: bundle install
   command: bundle install --without=development metric_fu test_ui test sqlserver chdir=$vmdb_dir
 

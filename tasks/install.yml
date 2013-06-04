@@ -25,7 +25,6 @@
    - freetds-devel
    - libxml2-devel.x86_64
    - libxslt-devel.x86_64
-   - gcc-c++.x86_64
    - memcached
    - postgresql-server
    - postgresql-devel
