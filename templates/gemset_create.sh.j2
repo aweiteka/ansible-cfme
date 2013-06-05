@@ -1,0 +1,8 @@
+source $HOME/{{ profile }}
+rbenv gemset create {{ ruby_ver }} cfme
+cd $HOME.rbenv/versions/{{ ruby_ver }}/gemsets/cfme
+>.rbenv-gemsets <<<cfme
+cd {{ vmdb_dir }}
+>.rbenv-gemsets <<<cfme
+rbenv gemset active
+rbenv rehash

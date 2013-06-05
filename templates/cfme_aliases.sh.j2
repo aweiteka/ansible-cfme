@@ -1,0 +1,24 @@
+# {{ ansible_managed }}
+#if [ -d "{{ vmdb_dir }}" ] ; then
+
+  # CFME Directory Alias
+  alias vmdb='cd {{ vmdb_dir }}'
+
+  # CFME Tail Aliases
+  alias tail_auto='tail -f {{ vmdb_dir }}/log/automation.log'
+  alias tail_evm='tail -f {{ vmdb_dir }}/log/evm.log'
+  alias tail_rhevm='tail -f {{ vmdb_dir }}/log/rhevm.log'
+  alias tail_prod='tail -f {{ vmdb_dir }}/log/production.log'
+  alias tail_policy='tail -f {{ vmdb_dir }}/log/policy.log'
+  alias tail_pglog='tail -f {{ vmdb_dir }}/log//var/lib/pgsql/data/serverlog'
+
+  # CFME Log Aliases
+  alias clean_all="echo Cleaned: `date` > {{ vmdb_dir }}/log/automation.log;echo Cleaned: `date` > {{ vmdb_dir }}/log/evm.log;echo Cleaned: `date` > {{ vmdb_dir }}/log/production.log;echo Cleaned: `date` > {{ vmdb_dir }}/log/policy.log;echo Cleaned: `date` > {{ vmdb_dir }}/log/audit.log;echo Cleaned: `date` > {{ vmdb_dir }}/log/rhevm.log;clear;echo Logs cleaned..."
+  alias clean_evm="echo Cleaned: `date` > {{ vmdb_dir }}/log/evm.log"
+  alias clean_rhevm="echo Cleaned: `date` > {{ vmdb_dir }}/log/rhevm.log"
+  alias clean_auto="echo Cleaned: `date` > {{ vmdb_dir }}/log/automation.log"
+  alias clean_audit="echo Cleaned: `date` > {{ vmdb_dir }}/log/audit.log"
+  alias clean_prod="echo Cleaned: `date` > {{ vmdb_dir }}/log/production.log"
+  alias clean_policy="echo Cleaned: `date` > {{ vmdb_dir }}/log/policy.log"
+  alias clean_pgsql="echo Cleaned: `date` > {{ db_dir }}/serverlog"
+#fi

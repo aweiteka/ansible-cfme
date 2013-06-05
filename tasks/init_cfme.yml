@@ -5,8 +5,8 @@
   seboolean: name=httpd_can_network_connect persistent=yes state=on
 
 - name: copy iptables
-  copy: src=files/iptables dest=/etc/sysconfig/iptables
-          owner=root group=root mode=0600
+  copy: src=files/iptables dest=/etc/sysconfig/iptables 
+          owner=root group=root mode=0600 backup=yes
 
 - name: ensure firewalld
   service: name=firewalld state=started enabled=yes

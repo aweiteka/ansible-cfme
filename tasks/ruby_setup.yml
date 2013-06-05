@@ -4,9 +4,21 @@
 - name: clone ruby rbenv-gemset
   git: repo=git://github.com/jamis/rbenv-gemset.git dest=$ENV(HOME)/$rbenv_dir/plugins force=no
 
+- name: copy rbenv install script
+  template: src=templates/ruby_install.sh.j2 dest=/tmp/ruby_install.sh owner=$ENV(USER) mode=0755
+
+- name: copy gemset create script
+  template: src=templates/gemset_create.sh.j2 dest=/tmp/gemset_create.sh owner=$ENV(USER) mode=0755
+
+#- name: copy bash_profile
+#  template: src=templates/bash_profile.j2 dest=/tmp/bash_profile owner=$ENV(USER) 
+
+- name: copy cfme aliases
+  template: src=templates/cfme_aliases.sh.j2 dest=/etc/profile.d/cfme_aliases.sh
+              owner=root group=root mode=0755 
+
   # should not be necessary if rbenv path setup properly
 - name: install rbenv-gemset to /usr/local/bin
-  #command: cp /root/$rbenv_dir/plugins/libexec/$item /usr/local/bin/ creates=/usr/local/bin/$item
   file: src=$ENV(HOME)/$rbenv_dir/plugins/libexec/$item dest=/usr/local/bin/$item state=link
   with_items:
     - rbenv-gemset
@@ -19,47 +31,44 @@
 - name: clone ruby-build
   git: repo=https://github.com/sstephenson/ruby-build.git dest=$ENV(HOME)/$rbenv_dir/plugins/ruby-build force=no
 
-- name: add rbenv to path
-  lineinfile: dest=$ENV(HOME)/$profile regexp="$rbenv_dir/bin" line="export PATH=$HOME/$rbenv_dir/bin:$PATH"
-
-- name: add rbenv init to path
-  lineinfile: dest=$ENV(HOME)/$profile regexp="rbenv init" line='eval "$(rbenv init -)"' insertafter=EOF
+- name: update $ENV(HOME)/$profile
+  lineinfile: dest=$ENV(HOME)/$profile regexp='' insertafter=EOF
+                line="export PATH=$HOME/$rbenv_dir/bin:$PATH\neval \"$(rbenv init -)\""
 
 - name: source path
-  shell: exec $ENV(SHELL) -l
-
-# workaround since path not resolving
-- name: install ruby-build standalone
-  shell: ./install.sh chdir=$ENV(HOME)/$rbenv_dir/plugins/ruby-build creates=/usr/local/bin/ruby-build
+  #shell: sudo -iu $ENV(USER) source $ENV(HOME)/$profile 
+  #shell: bash -lc '$ENV(HOME)/$profile' 
+  shell: . $ENV(HOME)/$profile 
 
 - name: install ruby
-  #command: rbenv install $ruby_ver creates=/usr/local/rbenv/versions/$ruby_ver/bin/ruby
-  command: rbenv install $ruby_ver creates=$ENV(HOME)/.rbenv/versions/$ruby_ver/bin/ruby
+  shell: bash -lc '$item' creates=$ENV(HOME)/.rbenv/versions/$ruby_ver/bin/ruby
+  with_items:
+    - rbenv install $ruby_ver
+    - rbenv rehash
+    - rbenv local $ruby_ver
+    - rbenv shell $ruby_ver
+    - rbenv rehash
 
-- name: rbenv rehash
-  command: rbenv rehash
-
-- name: rbenv local
-  command: rbenv local $ruby_ver chdir=$vmdb_dir
-
-- name: create gemset cfme
-  command: rbenv gemset create $ruby_ver cfme 
-
-- name: install gemset cfme
-  command: touch .rbenv-gemsets chdir=$vmdb_dir creates=$vmdb_dir/.rbenv-gemsets
-
-- name: activate gemset
-  command: rbenv gemset active chdir=$vmdb_dir
-
-- name: rbenv rehash-b
-  command: rbenv rehash chdir=$vmdb_dir
+- name: set local ruby_ver for $vmdb_dir
+  shell: bash -lc "rbenv local $ruby_ver" chdir=$vmdb_dir creates=$vmdb_dir/.ruby-version
 
 - name: gem install bundler
   gem: name=bundler state=present version=$bundler_ver
 
-- name: rbenv rehash-c
-  command: rbenv rehash chdir=$vmdb_dir
+- name: gemset create
+  shell: bash -lc 'rbenv rehash && rbenv gemset create $ruby_ver cfme' creates=$ENV(HOME)/$rbenv_dir/versions/$ruby_ver/gemsets/cfme
+
+- name: install gemset cfme local
+  shell: bash -lc '>.rbenv-gemsets <<<cfme' creates=$vmdb_dir/.rbenv-gemsets 
+           chdir=$ENV(HOME)/$rbenv_dir/versions/$ruby_ver/gemsets/cfme
+
+- name: install gemset cfme $vmdb_dir 
+  shell: bash -lc '$item' chdir=$vmdb_dir creates=$vmdb_dir/.rbenv-gemsets
+  with_items:
+    - ">.rbenv-gemsets <<<cfme"
+    - rbenv gemset active
+    - rbenv rehash
 
 - name: bundle install
-  command: bundle install --without metric_fu:sqlserver:qpid chdir=$vmdb_dir
+  shell: bash -lc 'bundle install --without metric_fu:sqlserver:qpid' chdir=$vmdb_dir
 

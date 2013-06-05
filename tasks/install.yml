@@ -33,7 +33,7 @@
 - name: start memcached
   service: name=memcached state=started enabled=true
 
-- name: download cfme using github token
+- name: download cfme source
   # ansible 'git' module --depth option added in ansible 1.2
   action: command git clone $cfme_src $cfme_dir --depth $github_depth creates=$cfme_dir
 
