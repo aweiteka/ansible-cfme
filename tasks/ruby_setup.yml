@@ -50,7 +50,7 @@
     - rbenv rehash
 
 - name: set local ruby_ver for $vmdb_dir
-  shell: bash -lc "rbenv local $ruby_ver" chdir=$vmdb_dir creates=$vmdb_dir/.ruby-version
+  shell: bash -lc "rbenv rehash && rbenv local $ruby_ver" chdir=$vmdb_dir creates=$vmdb_dir/.ruby-version
 
 - name: gem install bundler
   gem: name=bundler state=present version=$bundler_ver
@@ -63,7 +63,7 @@
            chdir=$ENV(HOME)/$rbenv_dir/versions/$ruby_ver/gemsets/cfme
 
 - name: install gemset cfme $vmdb_dir 
-  shell: bash -lc '$item' chdir=$vmdb_dir creates=$vmdb_dir/.rbenv-gemsets
+  shell: bash -lc '$item' chdir=$vmdb_dir
   with_items:
     - ">.rbenv-gemsets <<<cfme"
     - rbenv gemset active
