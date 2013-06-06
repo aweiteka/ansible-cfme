@@ -1,5 +1,5 @@
 # {{ ansible_managed }}
-#if [ -d "{{ vmdb_dir }}" ] ; then
+if [ -d "{{ vmdb_dir }}" ] ; then
 
   # CFME Directory Alias
   alias vmdb='cd {{ vmdb_dir }}'
@@ -21,4 +21,4 @@
   alias clean_prod="echo Cleaned: `date` > {{ vmdb_dir }}/log/production.log"
   alias clean_policy="echo Cleaned: `date` > {{ vmdb_dir }}/log/policy.log"
   alias clean_pgsql="echo Cleaned: `date` > {{ db_dir }}/serverlog"
-#fi
+fi

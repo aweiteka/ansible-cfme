@@ -1,4 +1,10 @@
-source $HOME/{{ profile }}
+#!/bin/bash
+
+# Make sure we have the ruby environment loaded
+if [ -f $HOME/{{ profile }} ]; then
+  source $HOME/{{ profile }}
+fi
+
 rbenv install {{ ruby_ver }}
 rbenv rehash
 rbenv local {{ ruby_ver }}

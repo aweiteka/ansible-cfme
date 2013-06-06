@@ -25,6 +25,7 @@
         ruby_ver: 1.9.3-p327
         profile: .bash_profile
         bundler_ver: 1.1.3
+        gemset: cfme
   - include: tasks/init_cfme.yml
   handlers:
   - include: handlers.yml

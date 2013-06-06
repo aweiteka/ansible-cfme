@@ -12,7 +12,7 @@
   service: name=firewalld state=started enabled=yes
 
 - name: db create
-  command: bundle exec rake db:create:all chdir=$vmdb_dir
+  command: rake db:create:all chdir=$vmdb_dir
 
 - name: db migrate
-  command: bundle exec rake db:migrate chdir=$vmdb_dir
+  command: bin/rake db:migrate chdir=$vmdb_dir
