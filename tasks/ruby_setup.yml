@@ -13,6 +13,9 @@
 - name: copy gemset create script
   template: src=templates/gemset_create.sh.j2 dest=$ENV(HOME)/gemset_create.sh owner=$ENV(USER) mode=0755
 
+- name: copy bundle install script
+  template: src=templates/bundle_install.sh.j2 dest=$ENV(HOME)/bundle_install.sh owner=$ENV(USER) mode=0755
+
 - name: copy cfme aliases
   template: src=templates/cfme_aliases.sh.j2 dest=/etc/profile.d/cfme_aliases.sh
               owner=root group=root mode=0755 
@@ -52,8 +55,9 @@
 #  shell: bash -lc "rbenv rehash && rbenv local $ruby_ver" chdir=$vmdb_dir creates=$vmdb_dir/.ruby-version
 
 
-- name: gem install bundler
-  gem: name=bundler state=present version=$bundler_ver
+#- name: gem install bundler
+#  shell: bash -lc 'gem install bundler -v $bundler_ver' chdir=$vmdb_dir
+#  gem: name=bundler state=present version=$bundler_ver
 
 - name: gemset create
   #shell: bash -lc 'rbenv rehash && rbenv gemset create $ruby_ver cfme' creates=$ENV(HOME)/$rbenv_dir/versions/$ruby_ver/gemsets/cfme
@@ -71,5 +75,6 @@
 #    - rbenv rehash
 
 - name: bundle install
-  shell: ash -lc 'bundle install --without metric_fu:sqlserver:qpid' chdir=$vmdb_dir
+  #shell: bash -lc 'bundle install --without metric_fu:sqlserver:qpid' chdir=$vmdb_dir
+  shell: $ENV(HOME)/bundle_install.sh
 

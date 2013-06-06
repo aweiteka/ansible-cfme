@@ -5,8 +5,9 @@ if [ -f $HOME/{{ profile }} ]; then
   source $HOME/{{ profile }}
 fi
 
-cd $HOME
-rbenv install {{ ruby_ver }}
-rbenv rehash
-rbenv local {{ ruby_ver }}
+cd {{ vmdb_dir }}
 rbenv shell {{ ruby_ver }}
+rbenv local {{ ruby_ver }}
+gem install bundler -v {{ bundler_ver }}
+rbenv rehash
+bundle install {{ bundle_opts }}
