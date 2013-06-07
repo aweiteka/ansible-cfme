@@ -74,6 +74,9 @@
 #    - rbenv gemset active
 #    - rbenv rehash
 
+- name: replace net-ldap ruby gem source
+  lineinfile: dest=$vmdb_dir/Gemfile regexp='^gem .net-ldap.' line='gem "net-ldap", "~> 0.2.2"'
+
 - name: bundle install
   #shell: bash -lc 'bundle install --without metric_fu:sqlserver:qpid' chdir=$vmdb_dir
   shell: $ENV(HOME)/bundle_install.sh

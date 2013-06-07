@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Make sure we have the ruby environment loaded
+if [ -f $HOME/.bash_profile ]; then
+  source $HOME/.bash_profile
+fi
+
+cd {{ vmdb_dir }}
+bundle exec rake db:create:all
+bin/rake db:migrate
+
