@@ -14,9 +14,6 @@
 - name: copy rake tasks script
   template: src=templates/rake_tasks.sh.j2 dest=$ENV(HOME)/rake_tasks.sh owner=$ENV(USER) mode=0755
 
-- name: db create
-  #command: rake db:create:all chdir=$vmdb_dir
+- name: db create and migrate
   shell: $ENV(HOME)/rake_tasks.sh
 
-#- name: db migrate
-#  command: bin/rake db:migrate chdir=$vmdb_dir

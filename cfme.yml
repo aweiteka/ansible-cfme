@@ -11,6 +11,7 @@
   tasks:
   - include: tasks/install.yml
     vars:
+        # add token during ansible run with '-e "github_token=<token>"'
         github_token: 
         cfme_src: https://$github_token@github.com/ManageIQ/cfme.git
         github_depth: 1

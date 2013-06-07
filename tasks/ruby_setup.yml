@@ -20,17 +20,6 @@
   template: src=templates/cfme_aliases.sh.j2 dest=/etc/profile.d/cfme_aliases.sh
               owner=root group=root mode=0755 
 
-  # should not be necessary if rbenv path setup properly
-#- name: install rbenv-gemset to /usr/local/bin
-#  file: src=$ENV(HOME)/$rbenv_dir/plugins/libexec/$item dest=/usr/local/bin/$item state=link
-#  with_items:
-#    - rbenv-gemset
-#    - rbenv-gemset-active
-#    - rbenv-gemset-create
-#    - rbenv-gemset-delete
-#    - rbenv-gemset-file
-#    - rbenv-gemset-list
-
 - name: update $ENV(HOME)/$profile
   lineinfile: dest=$ENV(HOME)/$profile regexp='' insertafter=EOF
                 line="export PATH=$HOME/$rbenv_dir/bin:$PATH\neval \"$(rbenv init -)\""
@@ -43,41 +32,13 @@
 
 - name: install ruby
   shell: $ENV(HOME)/ruby_install.sh creates=$ENV(HOME)/$rbenv_dir/versions/$ruby_ver/bin/ruby
-  #shell: bash -lc '$item' creates=$ENV(HOME)/.rbenv/versions/$ruby_ver/bin/ruby
-  #with_items:
-  #  - rbenv install $ruby_ver
-  #  - rbenv rehash
-  #  - rbenv local $ruby_ver
-  #  - rbenv shell $ruby_ver
-  #  - rbenv rehash
-
-#- name: set local ruby_ver for $vmdb_dir
-#  shell: bash -lc "rbenv rehash && rbenv local $ruby_ver" chdir=$vmdb_dir creates=$vmdb_dir/.ruby-version
-
-
-#- name: gem install bundler
-#  shell: bash -lc 'gem install bundler -v $bundler_ver' chdir=$vmdb_dir
-#  gem: name=bundler state=present version=$bundler_ver
 
 - name: gemset create
-  #shell: bash -lc 'rbenv rehash && rbenv gemset create $ruby_ver cfme' creates=$ENV(HOME)/$rbenv_dir/versions/$ruby_ver/gemsets/cfme
   shell: $ENV(HOME)/gemset_create.sh
-
-#- name: install gemset cfme local
-#  shell: bash -lc '>.rbenv-gemsets <<<cfme' creates=$vmdb_dir/.rbenv-gemsets 
-#           chdir=$ENV(HOME)/$rbenv_dir/versions/$ruby_ver/gemsets/cfme
-
-#- name: install gemset cfme $vmdb_dir 
-#  shell: bash -lc '$item' chdir=$vmdb_dir
-#  with_items:
-#    - ">.rbenv-gemsets <<<cfme"
-#    - rbenv gemset active
-#    - rbenv rehash
 
 - name: replace net-ldap ruby gem source
   lineinfile: dest=$vmdb_dir/Gemfile regexp='^gem .net-ldap.' line='gem "net-ldap", "~> 0.2.2"'
 
 - name: bundle install
-  #shell: bash -lc 'bundle install --without metric_fu:sqlserver:qpid' chdir=$vmdb_dir
   shell: $ENV(HOME)/bundle_install.sh
 
