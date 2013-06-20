@@ -1,0 +1,100 @@
+---
+
+- name: cfme_init | setsebool httpd_can_network_connect on
+  seboolean: name=httpd_can_network_connect persistent=yes state=on
+
+- name: cfme_init | determine if firewalld is installed
+  yum: name=firewalld state=present
+  register: is_firewalld_installed
+  ignore_errors: yes
+
+- name: cfme_init | remove firewalld
+  yum: name=firewalld state=removed
+  when: is_firewalld_installed|success
+
+- name: cfme_init | install iptables-services
+  yum: name=firewalld state=installed
+  when: is_firewalld_installed|success
+
+- name: cfme_init | update /etc/sysconfig/iptables
+  copy: src=files/iptables dest=/etc/sysconfig/iptables
+        owner=root group=root mode=0600 backup=yes
+  notify: restart iptables
+
+#
+# Create gemset (if bundle is incomplete)
+#
+
+- name: cfme_init | test whether bundle is available
+  shell: RBENV_ROOT=${rbenv_root} bundle check
+         chdir=$vmdb_dir
+  register: is_bundle_installed
+  ignore_errors: yes
+
+- name: cfme_init | gemset create cfme
+  shell: RBENV_ROOT=${rbenv_root} rbenv gemset create $ruby_version cfme
+         creates=$rbenv_root/versions/$ruby_version/gemsets/cfme
+  when_failed: $is_bundle_installed
+
+- name: cfme_init | create $vmdb_dir/.rbenv-gemsets
+  shell: echo "cfme" > $vmdb_dir/.rbenv-gemsets
+         chdir=$vmdb_dir
+         creates=$vmdb_dir/.rbenv-gemsets
+  when_failed: $is_bundle_installed
+
+- name: cfme_init | gemset active
+  shell: RBENV_ROOT=${rbenv_root} rbenv gemset active
+         chdir=$vmdb_dir
+  when_failed: $is_bundle_installed
+
+- name: cfme_init | add gem to PATH
+  file: path=/usr/local/bin/gem
+        src=${rbenv_root}/shims/gem
+        state=link
+  when_failed: $is_bundle_installed
+
+- name: cfme_init | gem install bundler
+  shell: RBENV_ROOT=${rbenv_root} gem install bundler -v $bundler_version
+         chdir=$vmdb_dir
+         creates=$rbenv_root/versions/$ruby_version/gemsets/cfme/gems/$bundler_version
+  when_failed: $is_bundle_installed
+
+- name: cfme_init | rehash
+  shell: RBENV_ROOT=${rbenv_root} rbenv rehash
+  when_failed: $is_bundle_installed
+
+- name: cfme_init | add bundle to PATH
+  file: path=/usr/local/bin/bundle
+        src=${rbenv_root}/shims/bundle
+        state=link
+  when_failed: $is_bundle_installed
+
+#
+# Install bundle
+#
+
+- name: cfme_init | hack - replace net-ldap ruby gem source
+  lineinfile: dest=$vmdb_dir/Gemfile
+              regexp='^gem .net-ldap.'
+              line='gem "net-ldap", "~> 0.2.2"'
+
+- name: cfme_init | bundle install
+  shell: RBENV_ROOT=${rbenv_root} bundle install --without metric_fu:sqlserver:qpid:development:test
+         chdir=$vmdb_dir
+
+- name: cfme_init | bundle exec rake db:create:all
+  shell: RBENV_ROOT=${rbenv_root} bundle exec rake db:create:all
+         chdir=$vmdb_dir
+
+- name: cfme_init | bundle exec rake db:migrate
+  shell: RBENV_ROOT=${rbenv_root} bundle exec rake db:migrate
+         chdir=$vmdb_dir
+
+#
+# Start application
+#
+
+#- name: cfme_init | rake evm:start
+#  shell: RBENV_ROOT=${rbenv_root} bin/rake evm:start
+#         chdir=$vmdb_dir
+#         creates=$vmdb_dir/tmp/pids/evm.pid

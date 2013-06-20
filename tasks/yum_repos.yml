@@ -1,0 +1,15 @@
+---
+
+- name: yum_repos | add cloudforms.repo
+  template: src=files/cloudforms.repo.j2 dest=/etc/yum.repos.d/cloudforms.repo owner=root group=root mode=0644
+  when: ansible_distribution == 'RedHat'
+
+- name: yum_repos | enable requested repos
+  shell: yum-config-manager --enable $item 1>/dev/null
+  with_items: enabled_repos
+  when: enabled_repos is defined and enabled_repos|length > 0
+
+- name: yum_repos | disable requested repos
+  shell: yum-config-manager --disable $item 1>/dev/null
+  with_items: disabled_repos
+  when: disabled_repos is defined and enabled_repos|length > 0

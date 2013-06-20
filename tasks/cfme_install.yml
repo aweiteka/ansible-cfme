@@ -1,7 +1,13 @@
 ---
 # Install CFME dependent packages
 
-- name: install package dependencies
+- name: cfme_install | install ansible dependencies (setsebool module)
+  yum: name=$item state=present
+  with_items:
+    - libselinux-python
+    - libsemanage-python
+
+- name: cfme_install | install runtime dependencies
   yum: name=$item state=present
   with_items:
    - gcc-c++
@@ -20,7 +26,6 @@
    - libtool
    - bison
    - ruby-devel
-   - qpid-cpp-client-devel
    - freetds-devel
    - libxml2-devel.x86_64
    - libxslt-devel.x86_64
@@ -29,14 +34,14 @@
    - postgresql-devel
    - net-tools
    - screen
+  notify:
+   - restart memcached
 
-- name: start memcached
-  service: name=memcached state=started enabled=true
+#
+# Shallow (depth=1) clone cfme.git
+#
+- name: cfme_install | clone cfme.git
+  git: repo=$cfme_src dest=$cfme_dir depth=1
 
-- name: download cfme source
-  # ansible 'git' module --depth option added in ansible 1.2
-  action: command git clone $cfme_src $cfme_dir --depth $github_depth creates=$cfme_dir
-
-- name: download vddk install script
+- name: cfme_install | download vddk install script
   action: copy src=files/install_vddk.sh dest=$ENV(HOME)/install_vddk.sh mode=0755
-

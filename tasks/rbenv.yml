@@ -1,0 +1,69 @@
+---
+- name: rbenv | install build depends
+  yum: name=$item state=latest
+  with_items:
+    - git
+
+- name: rbenv | update rbenv repo
+  git: repo=git://github.com/sstephenson/rbenv.git dest=$rbenv_root version=v0.4.0
+
+- name: rbenv-gemset | update gemset repo
+  git: repo=git://github.com/jamis/rbenv-gemset.git dest=$rbenv_root/plugins/rbenv-gemset
+
+- name: ruby-build | update ruby-build repo
+  git: repo=https://github.com/sstephenson/ruby-build.git dest=$rbenv_root/plugins/ruby-build
+
+- name: rbenv | add rbenv to PATH
+  file: path=/usr/local/bin/rbenv src=${rbenv_root}/bin/rbenv state=link
+
+- name: rbenv | add rbenv initialization to profile
+  template: src=files/rbenv/rbenv.sh.j2 dest=/etc/profile.d/rbenv.sh owner=root group=root mode=0755
+
+- name: rbenv | check ruby-build installed
+  command: test -x /usr/local/bin/ruby-build
+  register: rbuild_present
+  ignore_errors: yes
+
+- name: rbenv | create temporary directory
+  command: mktemp -d
+  register: tempdir
+  when_failed: $rbuild_present
+
+- name: rbenv | clone ruby-build repo
+  git: repo=git://github.com/sstephenson/ruby-build.git dest=${tempdir.stdout}/ruby-build
+  when_failed: $rbuild_present
+
+- name: rbenv | install ruby-build
+  command: ./install.sh chdir=${tempdir.stdout}/ruby-build
+  when_failed: $rbuild_present
+
+- name: rbenv | remove temporary directory
+  file: path=${tempdir.stdout} state=absent
+  when_failed: $rbuild_present
+
+# FIXME - adjust the conditional to work with ruby rpm ... ruby --version
+- name: rbenv | check ruby $ruby_version installed
+  shell: RBENV_ROOT=${rbenv_root} rbenv versions | grep $ruby_version
+  register: ruby_installed
+  ignore_errors: yes
+
+- name: rbenv | install ruby $ruby_version
+  shell: RBENV_ROOT=${rbenv_root} RUBY_CONFIGURE_OPTS="--enable-shared" rbenv install $ruby_version
+  when_failed: $ruby_installed
+
+- name: rbenv | set global ruby $ruby_version
+  shell: RBENV_ROOT=${rbenv_root} rbenv global $ruby_version
+  when_failed: $ruby_installed
+
+- name: rbenv | rehash
+  shell: RBENV_ROOT=${rbenv_root} rbenv rehash
+  when_failed: $ruby_installed
+
+- name: rbenv | add ruby to PATH
+  file: path=/usr/local/bin/$item
+        src=${rbenv_root}/shims/$item
+        state=link
+  with_items:
+    - rake
+    - ruby
+  when_failed: $ruby_installed
