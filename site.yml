@@ -16,7 +16,6 @@
 # For RedHat hosts, register to RHN
 #
 - hosts: RedHat
-
   tasks:
    - include: tasks/rhn_register.yml
      when: rhn_method is defined
@@ -25,8 +24,6 @@
 # For all other hosts, install CFME
 #
 - hosts: local
-  connection: local
-
   vars_prompt:
   - name: "github_token"
     prompt: "Enter GitHub Personal API Access Token (refer to https://github.com/blog/1509-personal-api-tokens)"
