@@ -13,7 +13,7 @@
   when: is_firewalld_installed|success
 
 - name: cfme_init | install iptables-services
-  yum: name=firewalld state=installed
+  yum: name=iptables-services state=installed
   when: is_firewalld_installed|success
 
 - name: cfme_init | update /etc/sysconfig/iptables
