@@ -3,6 +3,17 @@
   yum: name=$item state=latest
   with_items:
     - git
+    - zlib-devel
+    - autoconf
+    - gdbm-devel
+    - ncurses-devel
+    - db4-devel
+    - libffi-devel
+    - openssl-devel
+    - libyaml-devel
+    - readline-devel
+    - tk-devel
+    - procps
 
 - name: rbenv | update rbenv repo
   git: repo=git://github.com/sstephenson/rbenv.git dest=$rbenv_root version=v0.4.0
