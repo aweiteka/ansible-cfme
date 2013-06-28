@@ -1,0 +1,163 @@
+# For information on brew repos, consult
+# https://engineering.redhat.com/docs/en-US/Release_Configuration_Management/1/html/Developer_Guide/cloudforms-guide.html
+
+#
+# CloudForms System Engine
+#
+
+[cfse-latest-puddle]
+name=Red Hat Enterprise Linux $releasever - $basearch - System Engine latest puddle
+baseurl=http://download.lab.bos.redhat.com/rel-eng/CloudForms/latest/el6-se/$basearch/os
+enabled=0
+gpgcheck=0
+
+[cfse-1.1-puddle]
+name=Red Hat Enterprise Linux $releasever - $basearch - System Engine 1.1 latest puddle
+baseurl=http://download.lab.bos.redhat.com/rel-eng/CloudForms/1.1/latest/el6-se/$basearch/os
+enabled=0
+gpgcheck=0
+
+[cfse-1.1-prev-puddle]
+name=Red Hat Enterprise Linux $releasever - $basearch - System Engine 1.1 previous puddle
+baseurl=http://download.lab.bos.redhat.com/rel-eng/CloudForms/1.1/2013-01-31.1/el6-se/$basearch/os
+enabled=0
+gpgcheck=0
+
+[cfse-1.0.1-puddle]
+name=Red Hat Enterprise Linux $releasever - $basearch - System Engine 1.0.1 puddle
+baseurl=http://download.lab.bos.redhat.com/rel-eng/CloudForms/1.0.1/latest/el6-se/$basearch/os
+enabled=0
+gpgcheck=0
+
+[cfse-1.0-puddle]
+name=Red Hat Enterprise Linux $releasever - $basearch - System Engine 1.0 puddle
+baseurl=http://download.lab.bos.redhat.com/rel-eng/CloudForms/1.0/latest/el6-se/$basearch/os
+enabled=0
+gpgcheck=0
+
+#
+# CloudForms Cloud Engine
+#
+
+[cfce-latest-puddle]
+name=Red Hat Enterprise Linux $releasever - $basearch - Cloud Engine latest puddle
+baseurl=http://download.lab.bos.redhat.com/rel-eng/CloudForms/latest/el6-ce/$basearch/os
+enabled=0
+gpgcheck=0
+
+[cfce-1.1-puddle]
+name=Red Hat Enterprise Linux $releasever - $basearch - Cloud Engine 1.1 latest puddle
+baseurl=http://download.lab.bos.redhat.com/rel-eng/CloudForms/1.1/latest/el6-ce/$basearch/os
+enabled=0
+gpgcheck=0
+
+[cfce-1.1-prev-puddle]
+name=Red Hat Enterprise Linux $releasever - $basearch - System Engine 1.1 previous puddle
+baseurl=http://download.lab.bos.redhat.com/rel-eng/CloudForms/1.1/2013-01-31.1/el6-se/$basearch/os
+enabled=0
+gpgcheck=0
+
+[cfce-1.0.1-puddle]
+name=Red Hat Enterprise Linux $releasever - $basearch - Cloud Engine 1.0.1 puddle
+baseurl=http://download.lab.bos.redhat.com/rel-eng/CloudForms/1.0.1/latest/el6-ce/$basearch/os
+enabled=0
+gpgcheck=0
+
+[cfce-1.0-puddle]
+name=Red Hat Enterprise Linux $releasever - $basearch - Cloud Engine 1.0 puddle
+baseurl=http://download.lab.bos.redhat.com/rel-eng/CloudForms/1.0/latest/el6-ce/$basearch/os
+enabled=0
+gpgcheck=0
+
+#
+# CloudForms Tools
+#
+
+[cftools-latest-puddle]
+name=Red Hat Enterprise Linux $releasever - $basearch - CloudForms Tools latest puddle
+baseurl=http://download.lab.bos.redhat.com/rel-eng/CloudForms/latest/el6-tools/$basearch/os
+enabled=0
+gpgcheck=0
+
+[cftools-1.1-puddle]
+name=Red Hat Enterprise Linux $releasever - $basearch - CloudForms Tools 1.1 latest puddle
+baseurl=http://download.lab.bos.redhat.com/rel-eng/CloudForms/1.1/latest/el6-tools/$basearch/os
+enabled=0
+gpgcheck=0
+
+[cftools-1.0.1-puddle]
+name=Red Hat Enterprise Linux $releasever - $basearch - CloudForms Tools 1.0.1 puddle
+baseurl=http://download.lab.bos.redhat.com/rel-eng/CloudForms/1.0.1/latest/el6-tools/$basearch/os
+enabled=0
+gpgcheck=0
+
+[cftools-1.0-puddle]
+name=Red Hat Enterprise Linux $releasever - $basearch - CloudForms Tools 1.0 puddle
+baseurl=http://download.lab.bos.redhat.com/rel-eng/CloudForms/1.0/latest/el6-tools/$basearch/os
+enabled=0
+gpgcheck=0
+
+#
+# Brew repos
+#
+
+[se-rhel-6-candidate]
+name=Red Hat Enterprise Linux $releasever - $basearch - System Engine candidate
+baseurl=http://download.lab.bos.redhat.com/rel-eng/repos/se-rhel-6-candidate/$basearch
+enabled=0
+gpgcheck=0
+
+[se-rhel-6-build]
+name=Red Hat Enterprise Linux $releasever - $basearch - System Engine build
+baseurl=http://download.lab.bos.redhat.com/brewroot/repos/se-rhel-6-build/latest/$basearch
+enabled=0
+gpgcheck=0
+
+[ce-rhel-6-candidate]
+name=Red Hat Enterprise Linux $releasever - $basearch - CloudEngine candidate
+baseurl=http://download.lab.bos.redhat.com/rel-eng/repos/ce-rhel-6-candidate/$basearch
+enabled=0
+gpgcheck=0
+
+[ce-rhel-6-build]
+name=Red Hat Enterprise Linux $releasever - $basearch - CloudEngine build
+baseurl=http://download.lab.bos.redhat.com/brewroot/repos/ce-rhel-6-build/latest/$basearch
+enabled=0
+gpgcheck=0
+
+[cf-tools-1.0-rhel-6-candidate]
+name=Red Hat Enterprise Linux $releasever - $basearch - CloudForms Tools candidate
+baseurl=http://download.lab.bos.redhat.com/rel-eng/repos/cf-tools-1.0-rhel-6-candidate/$basearch
+enabled=0
+gpgcheck=0
+
+[cf-tools-1.0-rhel-6-build]
+name=Red Hat Enterprise Linux $releasever - $basearch - CloudForms Tools build
+baseurl=http://download.lab.bos.redhat.com/brewroot/repos/cf-tools-1.0-rhel-6-build/latest/$basearch
+enabled=0
+gpgcheck=0
+
+[cf-1.1-rhel-6-candidate]
+name=Red Hat Enterprise Linux $releasever - $basearch - System Engine, Cloud Engine and Tools candidate
+baseurl=http://download.lab.bos.redhat.com/rel-eng/repos/cf-1.1-rhel-6-candidate/$basearch
+enabled=0
+gpgcheck=0
+
+[cf-1.1-rhel-6-build]
+name=Red Hat Enterprise Linux $releasever - $basearch - System Engine, Cloud Engine and Tools build
+baseurl=http://download.lab.bos.redhat.com/brewroot/repos/cf-1.1-rhel-6-build/latest/$basearch
+enabled=0
+gpgcheck=0
+
+[cfme-5.2-rhel-6-candidate]
+name=Red Hat Enterprise Linux $releasever - $basearch - Cloud Management Engine candidate
+baseurl=http://download.lab.bos.redhat.com/rel-eng/repos/cfme-5.2-rhel-6-candidate/$basearch
+enabled=0
+gpgcheck=0
+
+[cfme-5.2-rhel-6-build]
+name=Red Hat Enterprise Linux $releasever - $basearch - Cloud Management Engine build
+baseurl=http://download.lab.bos.redhat.com/brewroot/repos/cfme-5.2-rhel-6-build/latest/$basearch
+enabled=0
+gpgcheck=0
+

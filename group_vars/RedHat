@@ -1,0 +1,34 @@
+rhn_method: rhsm
+rhn_username:
+rhn_password:
+
+#
+# RHN configuration
+#
+enable_eus: true
+rhn_server_url: https://xmlrpc.rhn.redhat.com/XMLRPC
+#rhn_server_url: https://xmlrpc.rhn.errata.stage.redhat.com/XMLRPC
+#rhn_server_url: https://xmlrpc.qa.stage.redhat.com/XMLRPC
+rhn_channels:
+    - rhel-x86_64-server-6-cf-me-2
+
+#
+# RHSM configuration
+#
+rhsm_server_hostname: subscription.rhn.redhat.com
+#rhsm_server_hostname: subscription.rhn.stage.redhat.com
+#rhsm_server_hostname: subscription.rhn.qa.redhat.com
+rhsm_server_insecure: false
+rhsm_baseurl: https://cdn.redhat.com
+autosubscribe: true
+rhsm_pool: '^CloudForms'
+rhsm_repos:
+    - cf-me-5.2-for-rhel-6-rpms
+
+#
+# YUM repo configuration
+#
+enabled_repos:
+    - cfme-5.2-rhel-6-candidate
+    - cfme-5.2-rhel-6-build
+disabled_repos: []

@@ -1,0 +1,59 @@
+---
+# Base playbook for cfme installation
+
+#
+# Dynamically create host groups based on distribution
+#
+- hosts: all
+  tasks:
+   - name: gather site specific fact data
+     action: site_facts
+
+   - name: group hosts by distribution
+     action: group_by key={{ansible_distribution}}
+
+#
+# For RedHat hosts, register to RHN
+#
+- hosts: RedHat
+  tasks:
+   - include: tasks/rhn_register.yml
+     when: rhn_method is defined
+
+#
+# For all other hosts, install CFME
+#
+- hosts: local
+  vars_prompt:
+  - name: "github_token"
+    prompt: "Enter GitHub Personal API Access Token (refer to https://github.com/blog/1509-personal-api-tokens)"
+    private: yes
+
+  tasks:
+   - include: tasks/yum_repos.yml
+
+   - name: install cfme from rpm
+     yum: name=$item state=present
+     register: is_cfme_rpm_installed
+     ignore_errors: yes
+     with_items: ['cfme', 'cfme-appliance']
+
+   - name: configure rpm-based cfme
+     shell: /var/www/miq/system/cfme-setup.sh
+        creates=$vmdb_dir/.bundle/config
+     when: is_cfme_rpm_installed|success
+
+   - include: tasks/rbenv.yml
+     when: is_cfme_rpm_installed|failed
+
+   - include: tasks/cfme_install.yml
+     when: is_cfme_rpm_installed|failed
+
+   - include: tasks/cfme_db.yml
+     when: is_cfme_rpm_installed|failed
+
+   - include: tasks/cfme_setup.yml
+     when: is_cfme_rpm_installed|failed
+
+  handlers:
+   - include: handlers/restart_services.yml

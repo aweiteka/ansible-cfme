@@ -1,0 +1,33 @@
+---
+- name: cfme_db | install required postgresql packages
+  yum: name=$item state=present
+  with_items:
+    - python-psycopg2
+    - postgresql-server
+    - postgresql
+
+- name: cfme_db | service postgresql initdb
+  command: service postgresql initdb
+        creates=$db_dir/PG_VERSION
+
+- name: cfme_db | copy postgresql.conf
+  copy: src=files/postgresql.conf
+        dest=$db_dir/postgresql.conf
+        owner=$db_user
+        group=$db_user
+        mode=0600
+
+- name: cfme_db | copy pg_hba.conf
+  copy: src=files/pg_hba.conf
+        dest=$db_dir/pg_hba.conf
+        owner=$db_user
+        group=$db_user
+        mode=0600
+
+- name: cfme_db | start postgresql, and enable at boot
+  service: name=postgresql
+        enabled=yes
+        state=started
+
+- name: cfme_db | create role
+  postgresql_user: fail_on_user=no login_user=$db_user name=root password=$db_passwd role_attr_flags=CREATEDB,CREATEROLE,SUPERUSER state=present
