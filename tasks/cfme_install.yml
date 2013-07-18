@@ -42,6 +42,3 @@
 #
 - name: cfme_install | clone cfme.git
   git: repo=$cfme_src dest=$cfme_dir depth=1
-
-- name: cfme_install | download vddk install script
-  action: copy src=files/install_vddk.sh dest=$ENV(HOME)/install_vddk.sh mode=0755

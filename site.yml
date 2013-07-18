@@ -55,5 +55,8 @@
    - include: tasks/cfme_setup.yml
      when: is_cfme_rpm_installed|failed
 
+   - include: tasks/vmware_vddk.yml
+     when: vmware_vddk_url is defined and vmware_vddk_url is string
+
   handlers:
    - include: handlers/restart_services.yml

@@ -1,0 +1,23 @@
+---
+
+- name: vmware_vddk | download
+  get_url: url={{vmware_vddk_url}} dest=/tmp mode=0440
+  register: vmware_vddk_file
+
+- name: vmware_vddk | tar -zxvf
+  shell: tar -zxvf {{vmware_vddk_file.dest}}
+         chdir=/tmp
+         creates=vmware-vix-disklib-distrib
+
+- name: vmware_vddk | vmware-install.pl
+  shell: perl vmware-install.pl EULA_AGREED=yes --default
+         chdir=/tmp/vmware-vix-disklib-distrib
+         creates=/usr/bin/vmware-uninstall-vix-disklib.pl
+
+- name: vmware_vddk | ldconfig --print-cache
+  shell: ldconfig --print-cache
+  register: ldconfig_cache
+
+- name: vmware_vddk | ldconfig
+  shell: ldconfig
+  when: vmware_vddk_url is defined and vmware_vddk_url is string and ldconfig_cache is defined and ldconfig_cache.stdout.find('libvixDiskLib') == -1
