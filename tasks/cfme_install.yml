@@ -37,6 +37,13 @@
   notify:
    - restart memcached
 
+- name: cfme_install | install httpd dependencies
+  yum: name=$item state=present
+  with_items:
+   - httpd
+   - mod_ssl
+  when: with_httpd
+
 #
 # Shallow (depth=1) clone cfme.git
 #
