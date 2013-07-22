@@ -44,8 +44,15 @@
    - mod_ssl
   when: with_httpd
 
-#
-# Shallow (depth=1) clone cfme.git
-#
-- name: cfme_install | clone cfme.git
-  git: repo=$cfme_src dest=$cfme_dir depth=1
+# First, attempt a shallow (depth=1) clone of cfme
+- name: cfme_install | git clone --depth=1 {{cfme_src}}
+  git: repo={{cfme_src}} version={{cfme_src_branch}} dest={{cfme_dir}} depth=1
+  ignore_errors: true
+  register: git_clone
+
+# If the shallow copy failed (refer to
+# https://github.com/ansible/ansible/pull/3578), clone the full repository.
+# Note, it is a large repository and this may take a long time.
+- name: cfme_install | git clone {{cfme_src}}
+  git: repo={{cfme_src}} version={{cfme_src_branch}} dest={{cfme_dir}}
+  when: git_clone|failed

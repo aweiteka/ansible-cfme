@@ -5,8 +5,9 @@ httpd_confd_dir: /etc/httpd/conf.d
 
 # cfme_install variables
 github_token:
-cfme_src: https://${github_token}:x-oauth-basic@github.com/ManageIQ/cfme.git
 with_httpd: true
+cfme_src: https://{{github_token}}:x-oauth-basic@github.com/ManageIQ/cfme.git
+cfme_src_branch: master
 
 # rbenv variables
 rbenv_root: /opt/rbenv
