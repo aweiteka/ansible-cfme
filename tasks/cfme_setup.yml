@@ -91,10 +91,38 @@
          chdir=$vmdb_dir
 
 #
+# Configure httpd (optional)
+#
+
+- name: cfme_init | mkdir {{vmdb_dir}}/log/apache
+  shell: mkdir {{vmdb_dir}}/log/apache
+  ignore_errors: yes
+  when: with_httpd
+
+- name: cfme_init | copy httpd conf.d files
+  copy: src={{cfme_dir}}/redhat_appliance_build/ROOT/etc/httpd/conf.d/{{item}} dest={{httpd_confd_dir}}/
+        owner=root group=apache mode=0644 backup=yes
+  with_items:
+    - aws-proxy-balancer.conf
+    - httpd-proxy-balancer.conf
+    - rewrite-http-to-https.conf
+    - ssl.conf.miq
+  when: with_httpd
+
+- name: cfme_init | rename ssl.conf.miq to ssl.conf
+  copy: src={{httpd_confd_dir}}/ssl.conf.miq dest={{httpd_confd_dir}}/ssl.conf
+        owner=root group=apache mode=0644 backup=yes
+  when: with_httpd
+
+- name: cfme_init | restorecon {{vmdb_dir}}/certs
+  shell: restorecon -vr {{vmdb_dir}}/certs
+  when: with_httpd
+
+#
 # Start application
 #
 
 #- name: cfme_init | rake evm:start
-#  shell: RBENV_ROOT=${rbenv_root} bin/rake evm:start
+#  shell: RBENV_ROOT=${rbenv_root} bundle exec rake evm:start
 #         chdir=$vmdb_dir
 #         creates=$vmdb_dir/tmp/pids/evm.pid
