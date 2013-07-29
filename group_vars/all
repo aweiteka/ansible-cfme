@@ -2,6 +2,7 @@
 cfme_dir: /var/www/miq
 vmdb_dir: $cfme_dir/vmdb
 httpd_confd_dir: /etc/httpd/conf.d
+sysv_init_dir: /etc/rc.d/init.d
 
 # cfme_install variables
 github_token:

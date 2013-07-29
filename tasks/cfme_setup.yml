@@ -119,6 +119,18 @@
   when: with_httpd
 
 #
+# Link to sysV init script
+#
+
+- name: cfme_init | install sysvinit script {{item}}
+  file: src={{cfme_dir}}/system/LINK/etc/init.d/{{item}}dest={{sysv_init_dir}}/{{item}}
+        owner=root group=root state=link
+  with_items:
+    - evminit
+    - evmserverd
+    - miqtop
+
+#
 # Start application
 #
 
@@ -126,3 +138,7 @@
 #  shell: RBENV_ROOT=${rbenv_root} bundle exec rake evm:start
 #         chdir=$vmdb_dir
 #         creates=$vmdb_dir/tmp/pids/evm.pid
+#
+#- name: cfme_init | service evmserverd start
+#  service: name=evmserverd enabled=yes state=started
+
