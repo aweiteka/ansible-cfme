@@ -123,7 +123,7 @@
 #
 
 - name: cfme_init | install sysvinit script {{item}}
-  file: src={{cfme_dir}}/system/LINK/etc/init.d/{{item}}dest={{sysv_init_dir}}/{{item}}
+  file: src={{cfme_dir}}/system/LINK/etc/init.d/{{item}} dest={{sysv_init_dir}}/{{item}}
         owner=root group=root state=link
   with_items:
     - evminit
