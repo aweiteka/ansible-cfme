@@ -2,13 +2,13 @@
 # Install CFME dependent packages
 
 - name: cfme_install | install ansible dependencies (setsebool module)
-  yum: name=$item state=present
+  yum: name={{item}} state=present
   with_items:
     - libselinux-python
     - libsemanage-python
 
 - name: cfme_install | install runtime dependencies
-  yum: name=$item state=present
+  yum: name={{item}} state=present
   with_items:
    - gcc-c++
    - patch
@@ -38,14 +38,14 @@
    - restart memcached
 
 - name: cfme_install | install httpd dependencies
-  yum: name=$item state=present
+  yum: name={{item}} state=present
   with_items:
    - httpd
    - mod_ssl
   when: with_httpd
 
 # First, attempt a shallow (depth=1) clone of cfme
-- name: cfme_install | git clone --depth=1 {{cfme_src}}
+- name: cfme_install | git clone --depth=1
   git: repo={{cfme_src}} version={{cfme_src_branch}} dest={{cfme_dir}} depth=1
   ignore_errors: true
   register: git_clone
@@ -53,6 +53,6 @@
 # If the shallow copy failed (refer to
 # https://github.com/ansible/ansible/pull/3578), clone the full repository.
 # Note, it is a large repository and this may take a long time.
-- name: cfme_install | git clone {{cfme_src}}
+- name: cfme_install | git clone
   git: repo={{cfme_src}} version={{cfme_src_branch}} dest={{cfme_dir}}
   when: git_clone|failed

@@ -26,95 +26,95 @@
 #
 
 - name: cfme_init | test whether bundle is available
-  shell: RBENV_ROOT=${rbenv_root} bundle check
-         chdir=$vmdb_dir
+  shell: RBENV_ROOT={{rbenv_root}} bundle check
+         chdir={{vmdb_dir}}
   register: is_bundle_installed
   ignore_errors: yes
 
 - name: cfme_init | gemset create cfme
-  shell: RBENV_ROOT=${rbenv_root} rbenv gemset create $ruby_version cfme
-         creates=$rbenv_root/versions/$ruby_version/gemsets/cfme
-  when_failed: $is_bundle_installed
+  shell: RBENV_ROOT={{rbenv_root}} rbenv gemset create {{ruby_version}} cfme
+         creates={{rbenv_root}}/versions/{{ruby_version}}/gemsets/cfme
+  when: is_bundle_installed|failed
 
-- name: cfme_init | create $vmdb_dir/.rbenv-gemsets
-  shell: echo "cfme" > $vmdb_dir/.rbenv-gemsets
-         chdir=$vmdb_dir
-         creates=$vmdb_dir/.rbenv-gemsets
-  when_failed: $is_bundle_installed
+- name: cfme_init | create .rbenv-gemsets in vmdb_dir
+  shell: echo "cfme" > {{vmdb_dir}}/.rbenv-gemsets
+         chdir={{vmdb_dir}}
+         creates={{vmdb_dir}}/.rbenv-gemsets
+  when: is_bundle_installed|failed
 
 - name: cfme_init | gemset active
-  shell: RBENV_ROOT=${rbenv_root} rbenv gemset active
-         chdir=$vmdb_dir
-  when_failed: $is_bundle_installed
+  shell: RBENV_ROOT={{rbenv_root}} rbenv gemset active
+         chdir={{vmdb_dir}}
+  when: is_bundle_installed|failed
 
 - name: cfme_init | add gem to PATH
   file: path=/usr/local/bin/gem
-        src=${rbenv_root}/shims/gem
+        src={{rbenv_root}}/shims/gem
         state=link
-  when_failed: $is_bundle_installed
+  when: is_bundle_installed|failed
 
 - name: cfme_init | gem install bundler
-  shell: RBENV_ROOT=${rbenv_root} gem install bundler -v $bundler_version
-         chdir=$vmdb_dir
-         creates=$rbenv_root/versions/$ruby_version/gemsets/cfme/gems/$bundler_version
-  when_failed: $is_bundle_installed
+  shell: RBENV_ROOT={{rbenv_root}} gem install bundler -v {{bundler_version}}
+         chdir={{vmdb_dir}}
+         creates={{rbenv_root}}/versions/{{ruby_version}}/gemsets/cfme/gems/{{bundler_version}}
+  when: is_bundle_installed|failed
 
 - name: cfme_init | rehash
-  shell: RBENV_ROOT=${rbenv_root} rbenv rehash
-  when_failed: $is_bundle_installed
+  shell: RBENV_ROOT={{rbenv_root}} rbenv rehash
+  when: is_bundle_installed|failed
 
 - name: cfme_init | add bundle to PATH
   file: path=/usr/local/bin/bundle
-        src=${rbenv_root}/shims/bundle
+        src={{rbenv_root}}/shims/bundle
         state=link
-  when_failed: $is_bundle_installed
+  when: is_bundle_installed|failed
 
 #
 # Install bundle
 #
 
 - name: cfme_init | hack - replace net-ldap ruby gem source
-  lineinfile: dest=$vmdb_dir/Gemfile
+  lineinfile: dest={{vmdb_dir}}/Gemfile
               regexp='^gem .net-ldap.'
               line='gem "net-ldap", "~> 0.2.2"'
 
 - name: cfme_init | bundle install
-  shell: RBENV_ROOT=${rbenv_root} bundle install --without metric_fu:sqlserver:qpid:development:test
-         chdir=$vmdb_dir
+  shell: RBENV_ROOT={{rbenv_root}} bundle install --without metric_fu:sqlserver:qpid:development:test
+         chdir={{vmdb_dir}}
 
 - name: cfme_init | bundle exec rake db:create:all
-  shell: RBENV_ROOT=${rbenv_root} bundle exec rake db:create:all
-         chdir=$vmdb_dir
+  shell: RBENV_ROOT={{rbenv_root}} bundle exec rake db:create:all
+         chdir={{vmdb_dir}}
 
 - name: cfme_init | bundle exec rake db:migrate
-  shell: RBENV_ROOT=${rbenv_root} bundle exec rake db:migrate
-         chdir=$vmdb_dir
+  shell: RBENV_ROOT={{rbenv_root}} bundle exec rake db:migrate
+         chdir={{vmdb_dir}}
 
 #
 # Configure httpd (optional)
 #
 
-- name: cfme_init | mkdir {{vmdb_dir}}/log/apache
+- name: cfme_init | mkdir log/apache in vmdb_dir
   shell: mkdir {{vmdb_dir}}/log/apache
   ignore_errors: yes
   when: with_httpd
 
 - name: cfme_init | copy httpd conf.d files
-  copy: src={{cfme_dir}}/redhat_appliance_build/ROOT/etc/httpd/conf.d/{{item}} dest={{httpd_confd_dir}}/
+  copy: src={{cfme_dir}}/system/COPY/etc/httpd/conf.d/{{item}} dest={{httpd_confd_dir}}/
         owner=root group=apache mode=0644 backup=yes
   with_items:
-    - aws-proxy-balancer.conf
-    - httpd-proxy-balancer.conf
-    - rewrite-http-to-https.conf
-    - ssl.conf.miq
+    - cfme-http.conf
+    - cfme-https.conf
+    - cfme-https-application.conf
   when: with_httpd
 
-- name: cfme_init | rename ssl.conf.miq to ssl.conf
-  copy: src={{httpd_confd_dir}}/ssl.conf.miq dest={{httpd_confd_dir}}/ssl.conf
-        owner=root group=apache mode=0644 backup=yes
+- name: cfme_init | backup ssl.conf as ssl.conf.orig
+  command: mv {{httpd_confd_dir}}/ssl.conf {{httpd_confd_dir}}/ssl.conf.orig
+           creates={{httpd_confd_dir}}/ssl.conf.orig
+           removes={{httpd_confd_dir}}/ssl.conf
   when: with_httpd
 
-- name: cfme_init | restorecon {{vmdb_dir}}/certs
+- name: cfme_init | restorecon certs in vmdb_dir
   shell: restorecon -vr {{vmdb_dir}}/certs
   when: with_httpd
 
@@ -122,7 +122,7 @@
 # Link to sysV init script
 #
 
-- name: cfme_init | install sysvinit script {{item}}
+- name: cfme_init | install sysvinit scripts
   file: src={{cfme_dir}}/system/LINK/etc/init.d/{{item}} dest={{sysv_init_dir}}/{{item}}
         owner=root group=root state=link
   with_items:
@@ -135,9 +135,9 @@
 #
 
 #- name: cfme_init | rake evm:start
-#  shell: RBENV_ROOT=${rbenv_root} bundle exec rake evm:start
-#         chdir=$vmdb_dir
-#         creates=$vmdb_dir/tmp/pids/evm.pid
+#  shell: RBENV_ROOT={{rbenv_root}} bundle exec rake evm:start
+#         chdir={{vmdb_dir}}
+#         creates={{vmdb_dir}}/tmp/pids/evm.pid
 #
 #- name: cfme_init | service evmserverd start
 #  service: name=evmserverd enabled=yes state=started

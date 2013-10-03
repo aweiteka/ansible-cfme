@@ -18,7 +18,7 @@
 - hosts: RedHat
   tasks:
    - include: tasks/rhn_register.yml
-     when: rhn_method is defined
+     when: rhn_enabled
 
 #
 # For all other hosts, install CFME
@@ -31,16 +31,17 @@
 
   tasks:
    - include: tasks/yum_repos.yml
+     when: use_internal_repos
 
    - name: install cfme from rpm
-     yum: name=$item state=present
+     yum: name={{item}} state=present
      register: is_cfme_rpm_installed
      ignore_errors: yes
      with_items: ['cfme', 'cfme-appliance']
 
    - name: configure rpm-based cfme
      shell: /var/www/miq/system/cfme-setup.sh
-        creates=$vmdb_dir/.bundle/config
+        creates={{vmdb_dir}}/.bundle/config
      when: is_cfme_rpm_installed|success
 
    - include: tasks/rbenv.yml
