@@ -13,7 +13,7 @@ cfme_src_branch: master
 # rbenv variables
 rbenv_root: /opt/rbenv
 ruby_version: 1.9.3-p429
-bundler_version: 1.1.3
+bundler_version: 1.3.5
 
 # cfme_db variables
 db_user: postgres
@@ -24,3 +24,6 @@ db_dir: /var/lib/pgsql/data
 # Enable VMware VDDK support -- https://access.redhat.com/site/articles/375983
 #
 vmware_vddk_url:
+
+# Enable AWS EC2 specific options/workarounds
+ec2_machine: false

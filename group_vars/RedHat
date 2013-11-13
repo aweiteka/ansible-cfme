@@ -1,3 +1,4 @@
+rhn_enabled: true
 rhn_method: rhsm
 rhn_username:
 rhn_password:
@@ -28,6 +29,7 @@ rhsm_repos:
 #
 # YUM repo configuration
 #
+use_internal_repos: true
 enabled_repos:
     - cfme-5.2-rhel-6-candidate
     - cfme-5.2-rhel-6-build
